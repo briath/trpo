@@ -1,0 +1,22 @@
+(def dh 0.01)
+
+(defn trap-area [b1 b2 h] (* 0.5 h (+ b1 b2)))
+
+(defn intg_n [f n]
+  (reduce (fn [sum i] (+ sum ((memoize trap-area) (f (* i dh)) (f (* (+ 1 i) dh)) dh))) 0 (range n)))
+
+(defn integrate [f]
+  (fn [x] 
+		  (def n (quot x dh))
+    (+ 
+     (intg_n f n)
+     (trap-area (f (* n dh)) (f x) (- x (* n dh))))
+  ))
+
+(defn test-func [x] (Math/log (+ 1 x)))
+(defn exp [x] (Math/exp x))
+
+(println (time ((integrate  test-func) 7.0)))
+(println (time ((integrate  test-func) 8.0)))
+(println (time ((integrate  test-func) 9.0)))
+(println (time ((integrate  test-func) 10.0)))
